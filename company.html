@@ -1,0 +1,131 @@
+<!-- hbox layout -->
+<div class="hbox hbox-auto-xs bg-light  ng-scope" data-ng-controller="companyController"> 
+
+	<!-- hbox layout -->
+	<div class="col w-lg b-r">
+		<div class="vbox">
+			<div class="wrapper m-t-xxs">
+				<div class="input-group">
+					<span class="input-group-addon input-sm"><i class="fa fa-search"></i></span>
+					<input type="text" class="form-control input-sm ng-pristine ng-valid ng-touched" placeholder="search {{group.name ? group.name : ''}}" ng-model="query" tabindex="0" aria-invalid="false">
+				</div>
+			</div>
+			<div class="form-group m-b-sm">
+				<div class="col-md-offset-1 col-sm-offset-4 col-md-8 checkbox">
+					<label class="i-checks">
+						<input type="checkbox" ng-checked="active" ng-model="active" ng-click="getCompany()" ><i></i> Active 
+					</label>
+				</div>
+			</div>			
+			<div class="row-row">
+				<div class="cell scrollable hover">
+					<div class="cell-inner">
+						<div class="padder"><!-- m-t-n-xxs -->
+							<div class="list-group">
+								<a ng-repeat="companySet in companySets | filter:{group:filter} | filter:query | orderBy:'companyID'" class="list-group-item" ng-class="{'select m-l-none': companySet.selected }" ng-click="selectedCompany(companySet,companySet.CompanyID)" >
+									<span class="block text-ellipsis" ng-class="{'m-l-none': companySet.selected }">
+										<strong> {{ companySet.ContactName }} </strong>
+									</span>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>          
+		</div>
+	</div>
+	<!-- column -->
+	<div class="col bg-white-only">
+		<form name="editForm" class="form-horizontal form-validation" novalidate>
+			<!-- <div class="wrapper-md bg-light lter b-b">
+			</div> -->
+			<div class="wrapper-md ng-scope b-b">
+				<h1 class="m-n h3 font-thin"> Company Setup </h1>
+			</div>
+
+			<div class="wrapper-md">
+				
+				<div class="form-group m-b-sm">
+					<center>
+						<div class="col-md-6" ng-controller="FileUploadCtrl">
+							<div class="h-auto m-b-lg">
+								<!-- class="hbox h-auto m-b-lg" -->
+								<div class="col w-sm">
+									<div ng-show="cropper.sourceImage==null">
+										<img img-Resizer="" img-Resizer-width="160" img-Resizer-height="160" id="img1" data-flow-img="file" ng-src="{{ imgSrc }}" data-max-size="10kb" class="mb-10" />
+									
+										<input type="file" id="chooseimg" name="choose" nv-file-select="" data-ng-model="file" uploader="uploader" onchange="angular.element(this).scope().uploadFile(this.files)" accept="image/*" ui-jq="filestyle" img-cropper-fileread image="cropper.sourceImage" class="filestyle" data-input="false" data-icon="false" data-badge="false"/>
+									</div>
+									<div ng-show="cropper.sourceImage!=null">
+										<div>											
+											<canvas width="300" height="300" id="canvas" image-cropper image="cropper.sourceImage" cropped-image="cropper.croppedImage" crop-width="160" crop-height="160" min-width="75" min-height="75" keep-aspect="true" crop-area-bounds="bounds"></canvas>
+										</div>
+										<div>Cropped Image:</div>
+										<div ng-show="cropper.croppedImage!=null" class="thumb-lg m-b-xs"><img ng-src="{{cropper.croppedImage}}" /></div>
+										<div ng-if="controller.isImage(item._file)" ng-repeat="item in uploader.queue">
+											<!--<div ng-thumb="{ file: item._file, height: 100 }"></div>-->
+											<button class="btn btn-material-red" name="remove" ng-click="removeshow(item,'chooseimg');">Remove</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>	
+					</center> 	
+				</div>
+
+				<div class="form-group m-b-sm">
+					<label class="col-md-3 col-sm-4 control-label">Name : <span class="text-danger text-xl font-bold v-middle">*</span></label>
+					<div class="col-md-5 col-sm-8">
+						<input type="text" name="Name" class="form-control" data-ng-model="companySet.ContactName" ng-keyup="requirename(companySet.ContactName)" ng-blur="requirename(companySet.ContactName)" required/>						
+						<span class="text-danger text-sm" ng-show="namerequried" >Name is required.</span>
+					</div>
+				</div>
+				<div class="form-group m-b-sm">
+					<label class="col-md-3 col-sm-4 control-label">Email : <span class="text-danger text-xl font-bold v-middle">*</span></label>
+					<div class="col-md-5 col-sm-8">
+						<input type="email" name="Email" class="form-control ng-valid-email " ng-class="{'ng-invalid': emailunique}" data-ng-model="companySet.Email" ng-keyup="duplicateEmail(companySet.Email)" ng-blur="duplicateEmail(companySet.Email)" autocomplete="off" required/>
+						<span class="text-danger text-sm" ng-show ="emailunique" >This is already use.</span>
+						<span class="text-danger text-sm" ng-show="emailvalid" >Email is invalid.</span>
+					</div>
+				</div>
+				<div class="form-group m-b-sm">
+					<label class="col-md-3 col-sm-4 control-label">Phone : <span class="text-danger text-xl font-bold v-middle">*</span></label>
+					<div class="col-md-5 col-sm-8">
+						<input type="text" name="Phone" class="form-control" data-ng-model="companySet.Phone" ng-keyup="requireph(companySet.Phone)" ng-blur="requireph(companySet.Phone)" required/>
+						<span class="text-danger text-sm" ng-show="phrequried" >Phone is required.</span>
+					</div>
+				</div>
+				<div class="form-group m-b-sm">
+					<label class="col-md-3 col-sm-4 control-label">No of Vehicle :</label>
+					<div class="col-md-5 col-sm-8">
+						<input type="text" name="NoOfVehicles" class="form-control" data-ng-model="companySet.NoOfVehicles" required/>
+						<span class="text-danger text-sm" ng-show="nofvehicleRequiried" >No Of Vehicle is required.</span>
+					</div>	
+				</div>
+				<div class="form-group m-b-sm">
+					<label class="col-md-3 col-sm-4 control-label">Address : <span class="text-danger text-xl font-bold v-middle">*</span></label>
+					<div class="col-md-5 col-sm-8">
+						<textarea class="form-control floating-label" rows="3" ng-model="companySet.Address" ng-keyup="requireAddress(companySet.Address)" ng-blur="requireAddress(companySet.Address)" required></textarea>
+						<span class="text-danger text-sm" ng-show="addressRequried" >Address is required.</span>
+					</div>
+				</div>
+				<div class="form-group m-b-sm">
+					<div class="col-md-offset-3 col-sm-offset-4 col-md-5 checkbox">
+		                <label class="i-checks">
+							<input type="checkbox" ng-checked="companySet.IsActive" ng-model="companySet.IsActive" /><i></i> Active
+		                </label>
+					</div>
+				</div>
+				<div class="form-group m-b-sm">
+					<div class="col-md-offset-3 col-sm-offset-4 col-md-8">
+						<button type="submit" class="btn m-b-xs btn-info" data-ng-click="newCompany()" ng-if="PERMISSIONCODE.new">New</button>
+						<button type="submit" class="btn m-b-xs btn-success" data-ng-if="companySet.CompanyID == 0 && PERMISSIONCODE.new" data-ng-click="saveCompany()" ng-disabled="editForm.$invalid || companySet.Password.length<MinPasswordLength">Save</button>
+						<button type="submit" class="btn m-b-xs btn-primary" data-ng-if="companySet.CompanyID > 0 && PERMISSIONCODE.edit" data-ng-click="saveCompany()" ng-disabled="editForm.$invalid ">Update</button>						
+						<button class="btn m-b-xs btn-danger" data-ng-if="companySet.CompanyID > 0 && PERMISSIONCODE.delete" data-ng-click="deleteConfirm()">Delete</button>
+					</div>
+				</div>
+			</div>
+		</form>		
+	</div>
+	<!-- Column -->
+</div>
