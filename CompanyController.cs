@@ -100,14 +100,14 @@ namespace TaxiApplication
                        from adl in _objdb.Company
                        where adl.CompanyID != CompanyID && adl.Email == Email
                        select adl
-                           ).ToList();  
+                           ).ToList();
 
             objresult = new { Name = 0, Email = 0 };
 
             if (Emaillist.Count() > 0)
             {
                 objresult = new { Name = 0, Email = 1 };
-            }           
+            }
 
             List<dynamic> dd = new List<dynamic>();
             dd.Add(objresult);
@@ -150,13 +150,13 @@ namespace TaxiApplication
                 newobj.Address = obj.Address;
                 newobj.Email = obj.Email;
                 newobj.Phone = obj.Phone;
-                newobj.CompanyID = obj.CompanyID;              
+                newobj.CompanyID = obj.CompanyID;
                 newobj.IsActive = obj.IsActive;
-				newobj.created_date = System.DateTime.Now;
-				newobj.modified_date = System.DateTime.Now;
+                newobj.created_date = System.DateTime.Now;
+                newobj.modified_date = System.DateTime.Now;
                 _objdb.Add(newobj);
                 _objdb.SaveChanges();
-                CompanyID = newobj.CompanyID;                
+                CompanyID = newobj.CompanyID;
             }
 
             if (logmsg == "")
@@ -168,10 +168,33 @@ namespace TaxiApplication
             }
             else
                 _objdb.AddEventLog("Info", "Update Company", logmsg, _tokenData.UserID, _tokenData.LoginType, _ipaddress);
-                
+
             dynamic objresponse = new { data = CompanyID };
             return objresponse;
         }
-        
+        [HttpPost("SaveImagePath", Name = "CompanySaveImagePath")]
+        [Authorize]
+        public dynamic SaveImagePath()
+        {
+            var objstr = HttpContext.Request.Form["objCompanyInfo"];
+            dynamic obj = Newtonsoft.Json.JsonConvert.DeserializeObject(objstr);
+            int CompanyID = obj.ID;
+            string ext = obj.FileExt;
+            string ImagePath = CompanyID.ToString() + '.' + ext;
+
+            var objCompany = _objdb.Company.Find(CompanyID);
+            dynamic objresponse;
+
+            if (objCompany != null)
+            {
+                objCompany.LogoPath = ImagePath;
+                _objdb.Update(objCompany);
+                _objdb.SaveChanges();
+                objresponse = new { data = true };
+            }
+            else
+                objresponse = new { data = false };
+            return objresponse;
+        }
     }
 }

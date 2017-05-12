@@ -36,4 +36,24 @@ app.service('companyService', ['$http', 'SERVICE_PATH','$rootScope', function ($
 			return results.data.data;
 		});
 	}
+
+	this.SaveImagePath = function (FileName, FileExt) {
+		var CompanySet = { "ID": FileName, "FileExt": FileExt };
+		var obj_company = { objCompanyInfo: JSON.stringify(CompanySet) };
+		return $http.post(serviceCompanyBase + 'SaveImagePath', $rootScope.ObjecttoParams(obj_company)).then(function (results) {
+			return results.data.data;
+		});
+	}
+
+	this.GetImagePath = function (CompanyID, FileExt) {
+		var params = parseInt(CompanyID) + '/' + FileExt;
+		var encryptdata = $rootScope.EncodeStringToBase64(params);
+
+		return $http.get(SERVICE_PATH.File + 'Download/GetCompanyPhoto/' + encryptdata).then(
+			function (results) {
+				return results.data;
+			}, function (error) {
+				return error;
+			});
+	}
 }]);
